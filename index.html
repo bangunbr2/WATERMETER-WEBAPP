@@ -10,7 +10,7 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#007bff">    
     <style>
-        /* Pengaturan khusus media cetak / PDF ukuran A4 */
+        /* Pengaturan default ukuran halaman A4 */
         @page {
             size: A4 portrait;
             margin: 10mm;
@@ -19,8 +19,38 @@
         /* Styling khusus saat mode print browser diaktifkan */
         @media print {
             body * {
-                visibility: hidden;
+                visibility: hidden !important;
             }
+            
+            /* Jika mode thermal printer aktif */
+            body.print-thermal {
+                width: 58mm; /* Sesuaikan standar thermal kecil (58mm atau 80mm) */
+                margin: 0;
+            }
+            body.print-thermal @page {
+                size: 58mm auto;
+                margin: 0mm;
+            }
+            body.print-thermal #area-preview-invoice, 
+            body.print-thermal #area-preview-invoice *, 
+            body.print-thermal #area-preview-laporan, 
+            body.print-thermal #area-preview-laporan * {
+                visibility: visible !important;
+            }
+            body.print-thermal #area-preview-invoice {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 58mm !important;
+                max-width: 58mm !important;
+                margin: 0 !important;
+                padding: 2mm !important;
+                border: none !important;
+                box-shadow: none !important;
+                font-size: 10px !important;
+            }
+
+            /* Default print A4 */
             #area-preview-invoice, #area-preview-invoice *, 
             #area-preview-laporan, #area-preview-laporan * {
                 visibility: visible;
@@ -244,6 +274,13 @@
                         <select id="inv-tipe" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
                             <option value="kolektif">Kolektif (12 per Halaman A4)</option>
                             <option value="individual">Individual</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Format / Media Cetak</label>
+                        <select id="inv-media-cetak" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                            <option value="a4">Kertas Standar (A4 / F4)</option>
+                            <option value="thermal">Thermal Printer Kecil (58mm/80mm)</option>
                         </select>
                     </div>
                     <div id="wrapper-pilih-pelanggan" class="hidden">
@@ -772,12 +809,19 @@
             }
         }
 
-        // Fungsi Cetak Langsung menggunakan window.print()
+        // Fungsi Cetak Fleksibel (Mendukung Thermal Printer & A4)
         function cetakInvoicePrint() {
+            const mediaCetak = document.getElementById('inv-media-cetak').value;
+            if (mediaCetak === 'thermal') {
+                document.body.classList.add('print-thermal');
+            } else {
+                document.body.classList.remove('print-thermal');
+            }
             window.print();
         }
 
         function cetakLaporanPrint() {
+            document.body.classList.remove('print-thermal');
             window.print();
         }
 
