@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Tagihan Air Bumirejo II</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Hubungkan Manifest PWA -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#007bff">    
@@ -293,7 +292,6 @@
                     </div>
                     <button onclick="previewInvoice()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Preview Invoice</button>
                     <button onclick="cetakInvoicePrint()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">🖨️ Cetak Print</button>
-                    <button onclick="downloadPDFInvoice()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Simpan PDF (A4)</button>
                 </div>
                 <div id="area-preview-invoice" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm min-h-[300px]">
                     <p class="text-center text-slate-400 py-12">Pilih bulan dan klik Preview untuk menampilkan invoice.</p>
@@ -322,7 +320,6 @@
                     </div>
                     <button onclick="previewLaporan()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Preview Laporan</button>
                     <button onclick="cetakLaporanPrint()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">🖨️ Cetak Print</button>
-                    <button onclick="downloadPDFLaporan()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Simpan PDF</button>
                 </div>
                 <div id="area-preview-laporan" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm min-h-[300px]">
                     <p class="text-center text-slate-400 py-12">Pilih bulan dan klik Preview untuk melihat laporan.</p>
@@ -846,18 +843,6 @@
             }, 200);
         }
 
-        function downloadPDFInvoice() {
-            const element = document.getElementById('area-preview-invoice');
-            const opt = {
-                margin:       5,
-                filename:     `Invoice-Kolektif-Air-Bumirejo.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().from(element).set(opt).save();
-        }
-
         function previewLaporan() {
             const bulan = document.getElementById('lap-bulan').value.trim().toLowerCase();
             const area = document.getElementById('area-preview-laporan');
@@ -905,11 +890,6 @@
                 </div>
             `;
             area.innerHTML = html;
-        }
-
-        function downloadPDFLaporan() {
-            const element = document.getElementById('area-preview-laporan');
-            html2pdf().from(element).save(`Laporan-Bulanan-Air.pdf`);
         }
 
         function simpanPengaturanTarif() {
@@ -976,7 +956,6 @@
                 return;
             }
 
-            // Pastikan data sudah dimuat sebelum pencarian dilakukan
             if (daftarPelanggan.length === 0) {
                 tampilkanBanner("Data sedang disinkronkan, silakan coba beberapa saat lagi.", "error");
                 muatData();
