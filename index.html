@@ -710,6 +710,7 @@
             const area = document.getElementById('area-preview-invoice');
             const p = daftarPelanggan.find(x => String(x.id_pelanggan).trim() === String(t.id_pelanggan).trim()) || { nama: '-', alamat: '-' };
             const pemakaian = Math.max(0, Number(t.meter_ini) - Number(t.meter_lalu));
+            const biayaAir = pemakaian * tarifPerM3;
 
             area.innerHTML = `
                 <div class="space-y-4 p-4">
@@ -731,7 +732,11 @@
                             <tr class="bg-sky-50"><th class="p-1 border border-sky-100">Lalu</th><th class="p-1 border border-sky-100">Ini</th><th class="p-1 border border-sky-100">Pakai</th></tr>
                             <tr><td class="p-1 border border-sky-100 text-center">${t.meter_lalu}</td><td class="p-1 border border-sky-100 text-center">${t.meter_ini}</td><td class="p-1 border border-sky-100 text-center font-bold">${pemakaian} m³</td></tr>
                         </table>
-                        <div class="flex justify-between items-center pt-1 font-bold text-xs">
+                        <div class="text-[10px] space-y-1 pt-1 border-t border-dashed">
+                            <div class="flex justify-between"><span>Biaya Air (${pemakaian} m³ x Rp ${tarifPerM3.toLocaleString('id-ID')}):</span><span>Rp ${biayaAir.toLocaleString('id-ID')}</span></div>
+                            <div class="flex justify-between"><span>Iuran Listrik:</span><span>Rp ${iuranListrik.toLocaleString('id-ID')}</span></div>
+                        </div>
+                        <div class="flex justify-between items-center pt-1 font-bold text-xs border-t">
                             <span>Total:</span>
                             <span class="text-sky-600">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</span>
                         </div>
@@ -799,6 +804,7 @@
                 filtered.forEach(t => {
                     const p = daftarPelanggan.find(x => String(x.id_pelanggan).trim() === String(t.id_pelanggan).trim()) || { nama: '-', alamat: '-' };
                     const pemakaian = Math.max(0, Number(t.meter_ini) - Number(t.meter_lalu));
+                    const biayaAir = pemakaian * tarifPerM3;
                     html += `
                         <div class="border border-dashed border-sky-300 p-2.5 rounded-xl bg-white flex flex-col justify-between space-y-1.5 text-[10px]" style="page-break-inside: avoid; break-inside: avoid;">
                             <div class="flex justify-between border-b pb-1">
@@ -817,6 +823,10 @@
                                 <tr class="bg-sky-50"><th class="p-0.5 border border-sky-100">Lalu</th><th class="p-0.5 border border-sky-100">Ini</th><th class="p-0.5 border border-sky-100">Pakai</th></tr>
                                 <tr><td class="p-0.5 border border-sky-100 text-center">${t.meter_lalu}</td><td class="p-0.5 border border-sky-100 text-center">${t.meter_ini}</td><td class="p-0.5 border border-sky-100 text-center font-bold">${pemakaian} m³</td></tr>
                             </table>
+                            <div class="text-[9px] space-y-0.5 pt-1 border-t border-dashed">
+                                <div class="flex justify-between"><span>Biaya Air:</span><span>Rp ${biayaAir.toLocaleString('id-ID')}</span></div>
+                                <div class="flex justify-between"><span>Iuran Listrik:</span><span>Rp ${iuranListrik.toLocaleString('id-ID')}</span></div>
+                            </div>
                             <div class="flex justify-between items-center pt-1 font-bold text-[11px] border-t">
                                 <span>Total:</span>
                                 <span class="text-sky-600">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</span>
@@ -831,6 +841,7 @@
                 filtered.forEach(t => {
                     const p = daftarPelanggan.find(x => String(x.id_pelanggan).trim() === String(t.id_pelanggan).trim()) || { nama: '-', alamat: '-' };
                     const pemakaian = Math.max(0, Number(t.meter_ini) - Number(t.meter_lalu));
+                    const biayaAir = pemakaian * tarifPerM3;
                     html += `
                         <div class="border-2 border-dashed border-sky-300 p-6 rounded-3xl bg-white max-w-xl mx-auto space-y-4 shadow-sm" style="page-break-inside: avoid; break-inside: avoid;">
                             <div class="flex justify-between border-b pb-3">
@@ -851,7 +862,11 @@
                                 <tr class="bg-sky-50"><th class="p-2 border border-sky-100">Meter Lalu</th><th class="p-2 border border-sky-100">Meter Ini</th><th class="p-2 border border-sky-100">Pemakaian</th></tr>
                                 <tr><td class="p-2 border border-sky-100 text-center">${t.meter_lalu}</td><td class="p-2 border border-sky-100 text-center">${t.meter_ini}</td><td class="p-2 border border-sky-100 text-center font-bold">${pemakaian} m³</td></tr>
                             </table>
-                            <div class="flex justify-between items-center pt-2 font-bold text-sm">
+                            <div class="text-xs space-y-1 pt-2 border-t border-dashed">
+                                <div class="flex justify-between"><span>Biaya Air (${pemakaian} m³ x Rp ${tarifPerM3.toLocaleString('id-ID')}):</span><span>Rp ${biayaAir.toLocaleString('id-ID')}</span></div>
+                                <div class="flex justify-between"><span>Iuran Listrik:</span><span>Rp ${iuranListrik.toLocaleString('id-ID')}</span></div>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 font-bold text-sm border-t">
                                 <span>Total Tagihan:</span>
                                 <span class="text-sky-600">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</span>
                             </div>
@@ -1118,6 +1133,7 @@
             if (!t) return;
             const p = daftarPelanggan.find(x => String(x.id_pelanggan).trim() === String(t.id_pelanggan).trim()) || { nama: '-', alamat: '-' };
             const pemakaian = Math.max(0, Number(t.meter_ini) - Number(t.meter_lalu));
+            const biayaAir = pemakaian * tarifPerM3;
 
             document.getElementById('konten-modal-preview-beranda').innerHTML = `
                 <div class="border-2 border-dashed border-sky-300 p-6 rounded-3xl bg-white space-y-4 shadow-sm">
@@ -1139,7 +1155,11 @@
                         <tr class="bg-sky-50"><th class="p-2 border border-sky-100">Meter Lalu</th><th class="p-2 border border-sky-100">Meter Ini</th><th class="p-2 border border-sky-100">Pemakaian</th></tr>
                         <tr><td class="p-2 border border-sky-100 text-center">${t.meter_lalu}</td><td class="p-2 border border-sky-100 text-center">${t.meter_ini}</td><td class="p-2 border border-sky-100 text-center font-bold">${pemakaian} m³</td></tr>
                     </table>
-                    <div class="flex justify-between items-center pt-2 font-bold text-sm">
+                    <div class="text-xs space-y-1 pt-2 border-t border-dashed">
+                        <div class="flex justify-between"><span>Biaya Air (${pemakaian} m³ x Rp ${tarifPerM3.toLocaleString('id-ID')}):</span><span>Rp ${biayaAir.toLocaleString('id-ID')}</span></div>
+                        <div class="flex justify-between"><span>Iuran Listrik:</span><span>Rp ${iuranListrik.toLocaleString('id-ID')}</span></div>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 font-bold text-sm border-t">
                         <span>Total Tagihan:</span>
                         <span class="text-sky-600">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</span>
                     </div>
