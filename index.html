@@ -108,9 +108,9 @@
         <section id="section-beranda" class="space-y-6">
             <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                 <h2 class="text-xl font-bold text-slate-900 mb-2">Cek Tagihan Air Anda</h2>
-                <p class="text-sm text-slate-500 mb-4">Masukkan ID Pelanggan untuk melihat rincian tagihan.</p>
+                <p class="text-sm text-slate-500 mb-4">Masukkan ID Pelanggan atau Nama untuk melihat rincian tagihan.</p>
                 <div class="flex gap-2">
-                    <input type="text" id="input-cari-tagihan" placeholder="Contoh: P001" class="flex-grow border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="input-cari-tagihan" placeholder="Contoh: P001 atau Budi" class="flex-grow border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onkeypress="if(event.key === 'Enter') cariTagihanBeranda()">
                     <button onclick="cariTagihanBeranda()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">Cari</button>
                 </div>
             </div>
@@ -157,4 +157,931 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Bulan Tagihan</label>
-                            <select id="t-bulan" onchange="updateMeterL
+                            <select id="t-bulan" onchange="updateMeterLaluDanID()" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                                <option value="Januari">Januari</option>
+                                <option value="Februari">Februari</option>
+                                <option value="Maret">Maret</option>
+                                <option value="April">April</option>
+                                <option value="Mei">Mei</option>
+                                <option value="Juni">Juni</option>
+                                <option value="Juli">Juli</option>
+                                <option value="Agustus">Agustus</option>
+                                <option value="September" selected>September</option>
+                                <option value="Oktober">Oktober</option>
+                                <option value="November">November</option>
+                                <option value="Desember">Desember</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Meter Lalu</label>
+                                <input type="number" id="t-meter-lalu" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Meter Ini</label>
+                                <input type="number" id="t-meter-ini" oninput="hitungTotalOtomatis()" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Total Pembayaran (Rp)</label>
+                            <input type="number" id="t-total" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-blue-600">
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit" id="btn-simpan-t" class="flex-grow bg-blue-600 text-white font-semibold py-2.5 rounded-lg text-sm">Simpan</button>
+                            <button type="button" onclick="resetFormTagihan()" class="bg-slate-200 text-slate-700 px-3 py-2.5 rounded-lg text-sm font-semibold">Batal</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm md:col-span-2 overflow-x-auto">
+                    <h3 class="font-bold text-slate-900 mb-4 text-base">Daftar Tagihan Tersimpan</h3>
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-100 text-slate-600 uppercase text-[11px]">
+                            <tr>
+                                <th class="p-3">ID Tagihan</th>
+                                <th class="p-3">Pelanggan</th>
+                                <th class="p-3">Bulan</th>
+                                <th class="p-3">Total</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-tagihan-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Content Pelanggan -->
+            <div id="content-pelanggan" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <h3 id="form-pelanggan-title" class="font-bold text-slate-900 mb-4 text-base">Tambah Pelanggan Baru</h3>
+                    <form onsubmit="simpanPelanggan(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">ID Pelanggan</label>
+                            <input type="text" id="p-id" placeholder="Contoh: P001" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nama</label>
+                            <input type="text" id="p-nama" placeholder="Nama Lengkap" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Alamat</label>
+                            <textarea id="p-alamat" rows="2" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Golongan</label>
+                            <input type="text" id="p-golongan" value="Rumah Tangga" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit" id="btn-simpan-p" class="flex-grow bg-blue-600 text-white font-semibold py-2.5 rounded-lg text-sm">Simpan</button>
+                            <button type="button" onclick="resetFormPelanggan()" class="bg-slate-200 text-slate-700 px-3 py-2.5 rounded-lg text-sm font-semibold">Batal</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm md:col-span-2 overflow-x-auto">
+                    <h3 class="font-bold text-slate-900 mb-4 text-base">Daftar Pelanggan</h3>
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-100 text-slate-600 uppercase text-[11px]">
+                            <tr>
+                                <th class="p-3">ID</th>
+                                <th class="p-3">Nama</th>
+                                <th class="p-3">Alamat</th>
+                                <th class="p-3">Golongan</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-pelanggan-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Content Invoice -->
+            <div id="content-invoice" class="hidden space-y-4">
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-wrap gap-4 items-end">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Pilih Bulan</label>
+                        <select id="inv-bulan" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                            <option value="Januari">Januari</option>
+                            <option value="Februari">Februari</option>
+                            <option value="Maret">Maret</option>
+                            <option value="April">April</option>
+                            <option value="Mei">Mei</option>
+                            <option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option>
+                            <option value="Agustus">Agustus</option>
+                            <option value="September" selected>September</option>
+                            <option value="Oktober">Oktober</option>
+                            <option value="November">November</option>
+                            <option value="Desember">Desember</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Jenis Invoice</label>
+                        <select id="inv-tipe" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                            <option value="kolektif">Kolektif (12 per Halaman A4)</option>
+                            <option value="individual">Individual</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Format / Media Cetak</label>
+                        <select id="inv-media-cetak" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                            <option value="a4">Kertas Standar (A4 / F4)</option>
+                            <option value="thermal">Thermal Printer Kecil (58mm/80mm)</option>
+                        </select>
+                    </div>
+                    <div id="wrapper-pilih-pelanggan" class="hidden">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Pelanggan</label>
+                        <select id="inv-pelanggan" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"></select>
+                    </div>
+                    <button onclick="previewInvoice()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Preview Invoice</button>
+                    <button onclick="cetakInvoicePrint()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">🖨️ Cetak Print</button>
+                    <button onclick="downloadPDFInvoice()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Simpan PDF (A4)</button>
+                </div>
+                <div id="area-preview-invoice" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm min-h-[300px]">
+                    <p class="text-center text-slate-400 py-12">Pilih bulan dan klik Preview untuk menampilkan invoice.</p>
+                </div>
+            </div>
+
+            <!-- Tab Content Laporan Bulanan -->
+            <div id="content-laporan" class="hidden space-y-4">
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex gap-4 items-end">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Pilih Bulan Laporan</label>
+                        <select id="lap-bulan" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                            <option value="Januari">Januari</option>
+                            <option value="Februari">Februari</option>
+                            <option value="Maret">Maret</option>
+                            <option value="April">April</option>
+                            <option value="Mei">Mei</option>
+                            <option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option>
+                            <option value="Agustus">Agustus</option>
+                            <option value="September" selected>September</option>
+                            <option value="Oktober">Oktober</option>
+                            <option value="November">November</option>
+                            <option value="Desember">Desember</option>
+                        </select>
+                    </div>
+                    <button onclick="previewLaporan()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Preview Laporan</button>
+                    <button onclick="cetakLaporanPrint()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">🖨️ Cetak Print</button>
+                    <button onclick="downloadPDFLaporan()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Simpan PDF</button>
+                </div>
+                <div id="area-preview-laporan" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm min-h-[300px]">
+                    <p class="text-center text-slate-400 py-12">Pilih bulan dan klik Preview untuk melihat laporan.</p>
+                </div>
+            </div>
+
+            <!-- Tab Content Pengaturan Tarif -->
+            <div id="content-pengaturan" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-900 text-base">Pengaturan Tarif Air & Iuran</h3>
+                    <p class="text-xs text-slate-500">Perubahan tarif ini akan otomatis diterapkan pada perhitungan total tagihan baru.</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Tarif Dasar per m³ (Rp)</label>
+                            <input type="number" id="setting-tarif-m3" value="3500" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Iuran Listrik / Beban Tetap (Rp)</label>
+                            <input type="number" id="setting-iuran-listrik" value="5000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <button onclick="simpanPengaturanTarif()" class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-lg text-sm">Simpan Pengaturan Tarif</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Login Operator -->
+    <div id="modal-login" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-xl">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-900 text-base">Login Operator</h3>
+                <button onclick="tutupModalLogin()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+            </div>
+            <form onsubmit="prosesLoginOperator(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">PIN / Password Rahasia</label>
+                    <input type="password" id="input-pin-operator" placeholder="Masukkan PIN operator" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="tutupModalLogin()" class="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-xs font-semibold">Batal</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-semibold">Masuk</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="modal-konfirmasi" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4">
+            <h3 class="font-bold text-slate-900 text-base" id="konf-judul">Konfirmasi</h3>
+            <p class="text-xs text-slate-600" id="konf-pesan">Yakin ingin menghapus data ini?</p>
+            <div class="flex gap-2 justify-end">
+                <button onclick="document.getElementById('modal-konfirmasi').classList.add('hidden')" class="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-xs font-semibold">Batal</button>
+                <button id="btn-konf-ya" class="bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-semibold">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Preview Invoice Cepat dari Beranda -->
+    <div id="modal-preview-beranda" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-lg w-full space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-900 text-base">Preview Invoice Pelanggan</h3>
+                <button onclick="document.getElementById('modal-preview-beranda').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+            </div>
+            <div id="konten-modal-preview-beranda"></div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="document.getElementById('modal-preview-beranda').classList.add('hidden')" class="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-xs font-semibold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw0ahQmdId6mQWvtnWYaCbqDK2ZbAXMd2XZQDaLe3Oq_7q5RXplZCuI3uWT7wu87tK99Q/exec";
+        const PIN_OPERATOR_RAHASIA = "123456";
+
+        const daftarUrutanBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+        let daftarPelanggan = [];
+        let daftarTagihan = [];
+        let modeEditPelanggan = false;
+        let modeEditTagihan = false;
+
+        let tarifPerM3 = Number(localStorage.getItem('tarif_m3')) || 3500;
+        let iuranListrik = Number(localStorage.getItem('iuran_listrik')) || 5000;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('setting-tarif-m3').value = tarifPerM3;
+            document.getElementById('setting-iuran-listrik').value = iuranListrik;
+
+            if (localStorage.getItem('operator') === 'true') {
+                aktifkanUIOperator();
+            }
+            muatData();
+        });
+
+        function tampilkanBanner(pesan, tipe = "sukses") {
+            const b = document.getElementById('banner-notif');
+            b.className = `p-3 rounded-xl text-xs font-semibold flex justify-between items-center ${tipe === 'sukses' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`;
+            document.getElementById('banner-notif-text').innerText = pesan;
+            b.classList.remove('hidden');
+            setTimeout(() => b.classList.add('hidden'), 4000);
+        }
+
+        function konfirmasiAksi(judul, pesan, callback) {
+            document.getElementById('konf-judul').innerText = judul;
+            document.getElementById('konf-pesan').innerText = pesan;
+            document.getElementById('btn-konf-ya').onclick = () => {
+                document.getElementById('modal-konfirmasi').classList.add('hidden');
+                callback();
+            };
+            document.getElementById('modal-konfirmasi').classList.remove('hidden');
+        }
+
+        async function kirimGAS(payload) {
+            const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
+            return await res.json();
+        }
+
+        async function muatData() {
+            try {
+                document.getElementById('status-koneksi').innerText = 'Memuat...';
+                const res = await (await fetch(GAS_URL + "?action=baca")).json();
+                if (res.status === "success") {
+                    daftarPelanggan = res.pelanggan || [];
+                    daftarTagihan = res.tagihan || [];
+                    renderDropdownPelanggan();
+                    renderTabelPelanggan();
+                    renderTabelTagihan();
+                    updateMeterLaluDanID();
+                    document.getElementById('status-koneksi').innerText = 'Terhubung';
+                    document.getElementById('status-koneksi').className = 'text-xs px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-medium';
+                }
+            } catch (e) {
+                document.getElementById('status-koneksi').innerText = 'Koneksi Gagal';
+                document.getElementById('status-koneksi').className = 'text-xs px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 font-medium';
+            }
+        }
+
+        function renderDropdownPelanggan() {
+            let html = '<option value="">-- Pilih Pelanggan --</option>';
+            daftarPelanggan.forEach(p => html += `<option value="${p.id_pelanggan}">${p.id_pelanggan} - ${p.nama}</option>`);
+            document.getElementById('t-pelanggan').innerHTML = html;
+            document.getElementById('inv-pelanggan').innerHTML = html;
+        }
+
+        function updateMeterLaluDanID() {
+            const idP = document.getElementById('t-pelanggan').value;
+            const bulanPilih = document.getElementById('t-bulan').value;
+            if (!idP || !bulanPilih) return;
+
+            if (!modeEditTagihan) {
+                const now = new Date();
+                const tahun = now.getFullYear();
+                const bulanAngka = String(daftarUrutanBulan.indexOf(bulanPilih) + 1).padStart(2, '0');
+                
+                const prefixId = `${tahun}${bulanAngka}`;
+                const existingCount = daftarTagihan.filter(t => t.id_tagihan && String(t.id_tagihan).startsWith(prefixId)).length;
+                const noUrut = String(existingCount + 1).padStart(3, '0');
+                
+                document.getElementById('t-id').value = `${prefixId}${noUrut}`;
+            }
+
+            const idxBulan = daftarUrutanBulan.indexOf(bulanPilih);
+            let meterLalu = 0;
+            if (idxBulan > 0) {
+                const bulanLaluStr = daftarUrutanBulan[idxBulan - 1];
+                const tagihanLalu = daftarTagihan.find(t => t.id_pelanggan === idP && t.bulan === bulanLaluStr);
+                if (tagihanLalu) {
+                    meterLalu = Number(tagihanLalu.meter_ini);
+                }
+            }
+            
+            document.getElementById('t-meter-lalu').value = meterLalu;
+            hitungTotalOtomatis();
+        }
+
+        function hitungTotalOtomatis() {
+            const lalu = Number(document.getElementById('t-meter-lalu').value) || 0;
+            const ini = Number(document.getElementById('t-meter-ini').value) || 0;
+            const pakai = Math.max(0, ini - lalu);
+            document.getElementById('t-total').value = (pakai * tarifPerM3) + iuranListrik;
+        }
+
+        async function simpanPelanggan(e) {
+            e.preventDefault();
+            const idP = document.getElementById('p-id').value.trim();
+            
+            if (!modeEditPelanggan && daftarPelanggan.some(p => String(p.id_pelanggan).trim() === idP)) {
+                tampilkanBanner(`Pelanggan dengan ID "${idP}" sudah terdaftar!`, 'error');
+                return;
+            }
+
+            const payload = {
+                sheet: "Pelanggan",
+                action: modeEditPelanggan ? "edit" : "tambah",
+                id_pelanggan: idP,
+                nama: document.getElementById('p-nama').value,
+                alamat: document.getElementById('p-alamat').value,
+                golongan: document.getElementById('p-golongan').value
+            };
+            const res = await kirimGAS(payload);
+            if (res.status === "success") {
+                tampilkanBanner('Pelanggan berhasil disimpan!');
+                resetFormPelanggan();
+                muatData();
+            } else {
+                tampilkanBanner(res.message, 'error');
+            }
+        }
+
+        async function simpanTagihan(e) {
+            e.preventDefault();
+            const idT = document.getElementById('t-id').value;
+            const idP = document.getElementById('t-pelanggan').value;
+            const bulanPilih = document.getElementById('t-bulan').value;
+
+            if (!modeEditTagihan && daftarTagihan.some(t => t.id_tagihan === idT)) {
+                tampilkanBanner('Tagihan dengan ID ini sudah ada!', 'error');
+                return;
+            }
+
+            if (!modeEditTagihan && daftarTagihan.some(t => String(t.id_pelanggan).trim() === String(idP).trim() && String(t.bulan).trim().toLowerCase() === String(bulanPilih).trim().toLowerCase())) {
+                tampilkanBanner(`Tagihan untuk pelanggan ini pada bulan ${bulanPilih} sudah pernah diinput!`, 'error');
+                return;
+            }
+
+            const payload = {
+                sheet: "Tagihan",
+                action: modeEditTagihan ? "edit" : "tambah",
+                id_tagihan: idT,
+                id_pelanggan: idP,
+                bulan: bulanPilih,
+                meter_lalu: document.getElementById('t-meter-lalu').value,
+                meter_ini: document.getElementById('t-meter-ini').value,
+                total_bayar: document.getElementById('t-total').value
+            };
+            const res = await kirimGAS(payload);
+            if (res.status === "success") {
+                tampilkanBanner('Tagihan berhasil disimpan!');
+                resetFormTagihan();
+                muatData();
+            } else {
+                tampilkanBanner(res.message, 'error');
+            }
+        }
+
+        function renderTabelPelanggan() {
+            let html = '';
+            daftarPelanggan.forEach(p => {
+                html += `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-3 font-semibold">${p.id_pelanggan}</td>
+                        <td class="p-3">${p.nama}</td>
+                        <td class="p-3">${p.alamat}</td>
+                        <td class="p-3">${p.golongan}</td>
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="editPelanggan('${p.id_pelanggan}')" class="bg-amber-500 text-white text-xs px-2 py-1 rounded">Edit</button>
+                            <button onclick="hapusPelanggan('${p.id_pelanggan}')" class="bg-rose-600 text-white text-xs px-2 py-1 rounded">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('tabel-pelanggan-body').innerHTML = html || '<tr><td colspan="5" class="p-4 text-center text-slate-400">Kosong</td></tr>';
+        }
+
+        function editPelanggan(id) {
+            const p = daftarPelanggan.find(x => x.id_pelanggan === id);
+            if (!p) return;
+            document.getElementById('p-id').value = p.id_pelanggan;
+            document.getElementById('p-id').readOnly = true;
+            document.getElementById('p-nama').value = p.nama;
+            document.getElementById('p-alamat').value = p.alamat;
+            document.getElementById('p-golongan').value = p.golongan;
+            document.getElementById('form-pelanggan-title').innerText = 'Edit Pelanggan';
+            document.getElementById('btn-simpan-p').innerText = 'Perbarui';
+            modeEditPelanggan = true;
+        }
+
+        function resetFormPelanggan() {
+            document.getElementById('p-id').readOnly = false;
+            document.querySelector('#content-pelanggan form').reset();
+            document.getElementById('form-pelanggan-title').innerText = 'Tambah Pelanggan Baru';
+            document.getElementById('btn-simpan-p').innerText = 'Simpan';
+            modeEditPelanggan = false;
+        }
+
+        function hapusPelanggan(id) {
+            konfirmasiAksi("Hapus Pelanggan", `Yakin ingin menghapus ${id}?`, async () => {
+                const res = await kirimGAS({ sheet: "Pelanggan", action: "hapus", id_pelanggan: id });
+                if (res.status === "success") {
+                    tampilkanBanner('Pelanggan dihapus.');
+                    muatData();
+                } else {
+                    tampilkanBanner(res.message, 'error');
+                }
+            });
+        }
+
+        function renderTabelTagihan() {
+            let html = '';
+            daftarTagihan.forEach(t => {
+                html += `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-3 font-semibold">${t.id_tagihan}</td>
+                        <td class="p-3">${t.id_pelanggan}</td>
+                        <td class="p-3">${t.bulan}</td>
+                        <td class="p-3 font-bold text-blue-600">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</td>
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="previewInvoiceSingle('${t.id_tagihan}')" class="bg-indigo-600 text-white text-xs px-2 py-1 rounded">Invoice</button>
+                            <button onclick="editTagihan('${t.id_tagihan}')" class="bg-amber-500 text-white text-xs px-2 py-1 rounded">Edit</button>
+                            <button onclick="hapusTagihan('${t.id_tagihan}')" class="bg-rose-600 text-white text-xs px-2 py-1 rounded">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('tabel-tagihan-body').innerHTML = html || '<tr><td colspan="5" class="p-4 text-center text-slate-400">Kosong</td></tr>';
+        }
+
+        function previewInvoiceSingle(idTagihan) {
+            gantiTab('invoice');
+            document.getElementById('inv-tipe').value = 'individual';
+            document.getElementById('wrapper-pilih-pelanggan').classList.remove('hidden');
+
+            const t = daftarTagihan.find(x => x.id_tagihan === idTagihan);
+            if (!t) return;
+
+            document.getElementById('inv-bulan').value = t.bulan;
+            document.getElementById('inv-pelanggan').value = t.id_pelanggan;
+
+            const area = document.getElementById('area-preview-invoice');
+            const p = daftarPelanggan.find(x => String(x.id_pelanggan).trim() === String(t.id_pelanggan).trim()) || { nama: '-', alamat: '-' };
+            const pemakaian = Math.max(0, Number(t.meter_ini) - Number(t.meter_lalu));
+
+            area.innerHTML = `
+                <div class="space-y-4 p-4">
+                    <div class="border-2 border-dashed border-slate-300 p-4 rounded-xl bg-white max-w-sm mx-auto space-y-2 text-[11px]">
+                        <div class="flex justify-between border-b pb-2">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-xs">INVOICE AIR BUMIREJO II</h4>
+                                <p class="text-[10px] text-slate-500">Bulan: ${t.bulan}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">${t.id_tagihan}</span>
+                            </div>
+                        </div>
+                        <div class="space-y-0.5">
+                            <p><b>ID:</b> ${t.id_pelanggan} | <b>Nama:</b> ${p.nama}</p>
+                            <p><b>Alamat:</b> ${p.alamat}</p>
+                        </div>
+                        <table class="w-full border text-[10px]">
+                            <tr class="bg-slate-100"><th class="p-1 border">Lalu</th><th class="p-1 border">Ini</th><th class="p-1 border">Pakai</th></tr>
+                            <tr><td class="p-1 border text-center">${t.meter_lalu}</td><td class="p-1 border text-center">${t.meter_ini}</td><td class="p-1 border text-center font-bold">${pemakaian} m³</td></tr>
+                        </table>
+                        <div class="flex justify-between items-center pt-1 font-bold text-xs">
+                            <span>Total:</span>
+                            <span class="text-blue-600">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function editTagihan(id) {
+            const t = daftarTagihan.find(x => x.id_tagihan === id);
+            if (!t) return;
+            document.getElementById('t-id').value = t.id_tagihan;
+            document.getElementById('t-pelanggan').value = t.id_pelanggan;
+            document.getElementById('t-bulan').value = t.bulan;
+            document.getElementById('t-meter-lalu').value = t.meter_lalu;
+            document.getElementById('t-meter-ini').value = t.meter_ini;
+            document.getElementById('t-total').value = t.total_bayar;
+            document.getElementById('form-tagihan-title').innerText = 'Edit Tagihan';
+            document.getElementById('btn-simpan-t').innerText = 'Perbarui';
+            modeEditTagihan = true;
+        }
+
+        function resetFormTagihan() {
+            document.querySelector('#content-tagihan form').reset();
+            document.getElementById('form-tagihan-title').innerText = 'Buat Tagihan Baru';
+            document.getElementById('btn-simpan-t').innerText = 'Simpan';
+            modeEditTagihan = false;
+            updateMeterLaluDanID();
+        }
+
+        function hapusTagihan(id) {
+            konfirmasiAksi("Hapus Tagihan", `Yakin ingin menghapus tagihan ${id}?`, async () => {
+                const res = await kirimGAS({ sheet: "Tagihan", action: "hapus", id_tagihan: id });
+                if (res.status === "success") {
+                    tampilkanBanner('Tagihan dihapus.');
+                    muatData();
+                } else {
+                    tampilkanBanner(res.message, 'error');
+                }
+            });
+        }
+
+        document.getElementById('inv-tipe').addEventListener('change', (e) => {
+            document.getElementById('wrapper-pilih-pelanggan').classList.toggle('hidden', e.target.value !== 'individual');
+        });
+
+        // Preview Invoice (Kolektif 12 per halaman A4 atau Individual)
+        function previewInvoice() {
+            const bulan = document.getElementById('inv-bulan').value.trim().toLowerCase();
+            const tipe = document.getElementById('inv-tipe').value;
+            const area = document.getElementById('area-preview-invoice');
+
+            let filtered = daftarTagihan.filter(t => String(t.bulan).trim().toLowerCase() === bulan);
+            if (tipe === 'individual') {
+                const idP = document.getElementById('inv-pelanggan').value;
+                filtered = filtered.filter(t => t.id_pelanggan === idP);
+            }
+
+            if (filtered.length === 0) {
+                area.innerHTML = `<p class="text-center text-slate-400 py-12">Tidak ada data tagihan untuk bulan ${document.getElementById('inv-bulan').value}.</p>`;
+                return;
+            }
+
+            if (tipe === 'kolektif') {
+                let html = `<div class="grid grid-cols-3 gap-3 p-2 bg-white" style="width: 210mm; min-height: 297mm; margin: 0 auto; box-sizing: border-box;">`;
+                filtered.forEach(t => {
+                    const p = daftarPelanggan.find(x => String(x.id_pelanggan).trim() === String(t.id_pelanggan).trim()) || { nama: '-', alamat: '-' };
+                    const pemakaian = Math.max(0, Number(t.meter_ini) - Number(t.meter_lalu));
+                    html += `
+                        <div class="border border-dashed border-slate-400 p-2.5 rounded-lg bg-white flex flex-col justify-between space-y-1.5 text-[10px]" style="page-break-inside: avoid; break-inside: avoid; height: 64mm;">
+                            <div class="flex justify-between border-b pb-1">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-[10px] leading-tight">AIR BUMIREJO II</h4>
+                                    <p class="text-[9px] text-slate-500">${t.bulan}</p>
+                                </div>
+                                <span class="font-bold text-blue-600 bg-blue-50 px-1 py-0.5 rounded text-[9px]">${t.id_tagihan}</span>
+                            </div>
+                            <div class="space-y-0.5 overflow-hidden">
+                                <p class="truncate"><b>ID:</b> ${t.id_pelanggan}</p>
+                                <p class="truncate"><b>Nama:</b> ${p.nama}</p>
+                                <p class="truncate text-[9px] text-slate-600"><b>Alamat:</b> ${p.alamat}</p>
+                            </div>
+                            <table class="w-full border text-[9px]">
+                                <tr class="bg-slate-100"><th class="p-0.5 border">Lalu</th><th class="p-0.5 border">Ini</th><th class="p-0.5 border">Pakai</th></tr>
+                                <tr><td class="p-0.5 border text-center">${t.meter_lalu}</td><td class="p-0.5 border text-center">${t.meter_ini}</td><td class="p-0.5 border text-center font-bold">${pemakaian} m³</td></tr>
+                            </table>
+                            <div class="flex justify-between items-center pt-1 font-bold text-[11px] border-t">
+                                <span>Total:</span>
+                                <span class="text-blue-600">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                area.innerHTML = html;
+            } else {
+                let html = `<div class="space-y-8 p-4">`;
+                filtered.forEach(t => {
+                    const p = daftarPelanggan.find(x => String(x.id_pelanggan).trim() === String(t.id_pelanggan).trim()) || { nama: '-', alamat: '-' };
+                    const pemakaian = Math.max(0, Number(t.meter_ini) - Number(t.meter_lalu));
+                    html += `
+                        <div class="border-2 border-dashed border-slate-300 p-6 rounded-2xl bg-white max-w-xl mx-auto space-y-4">
+                            <div class="flex justify-between border-b pb-3">
+                                <div>
+                                    <h4 class="font-bold text-slate-900">INVOICE AIR BUMIREJO II</h4>
+                                    <p class="text-xs text-slate-500">Bulan Tagihan: ${t.bulan}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">${t.id_tagihan}</span>
+                                </div>
+                            </div>
+                            <div class="text-xs space-y-1">
+                                <p><b>ID Pelanggan:</b> ${t.id_pelanggan}</p>
+                                <p><b>Nama:</b> ${p.nama}</p>
+                                <p><b>Alamat:</b> ${p.alamat}</p>
+                            </div>
+                            <table class="w-full text-xs border">
+                                <tr class="bg-slate-100"><th class="p-2 border">Meter Lalu</th><th class="p-2 border">Meter Ini</th><th class="p-2 border">Pemakaian</th></tr>
+                                <tr><td class="p-2 border text-center">${t.meter_lalu}</td><td class="p-2 border text-center">${t.meter_ini}</td><td class="p-2 border text-center font-bold">${pemakaian} m³</td></tr>
+                            </table>
+                            <div class="flex justify-between items-center pt-2 font-bold text-sm">
+                                <span>Total Tagihan:</span>
+                                <span class="text-blue-600">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                area.innerHTML = html;
+            }
+        }
+
+        // Fungsi Cetak Invoice (Dengan proteksi agar tidak kosong)
+        function cetakInvoicePrint() {
+            const area = document.getElementById('area-preview-invoice');
+            if (!area || area.innerText.includes("Pilih bulan dan klik Preview")) {
+                tampilkanBanner("Silakan klik 'Preview Invoice' terlebih dahulu sebelum mencetak!", "error");
+                return;
+            }
+
+            const mediaCetak = document.getElementById('inv-media-cetak').value;
+            if (mediaCetak === 'thermal') {
+                document.body.classList.add('print-thermal');
+            } else {
+                document.body.classList.remove('print-thermal');
+            }
+
+            setTimeout(() => {
+                window.print();
+            }, 200);
+        }
+
+        // Fungsi Cetak Laporan (Dengan proteksi agar tidak kosong)
+        function cetakLaporanPrint() {
+            const area = document.getElementById('area-preview-laporan');
+            if (!area || area.innerText.includes("Pilih bulan dan klik Preview")) {
+                tampilkanBanner("Silakan klik 'Preview Laporan' terlebih dahulu sebelum mencetak!", "error");
+                return;
+            }
+
+            document.body.classList.remove('print-thermal');
+            
+            setTimeout(() => {
+                window.print();
+            }, 200);
+        }
+
+        function downloadPDFInvoice() {
+            const element = document.getElementById('area-preview-invoice');
+            const opt = {
+                margin:       5,
+                filename:     `Invoice-Kolektif-Air-Bumirejo.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().from(element).set(opt).save();
+        }
+
+        function previewLaporan() {
+            const bulan = document.getElementById('lap-bulan').value.trim().toLowerCase();
+            const area = document.getElementById('area-preview-laporan');
+            const filtered = daftarTagihan.filter(t => String(t.bulan).trim().toLowerCase() === bulan);
+
+            let totalPendapatan = filtered.reduce((acc, curr) => acc + Number(curr.total_bayar), 0);
+
+            if (filtered.length === 0) {
+                area.innerHTML = `<p class="text-center text-slate-400 py-12">Tidak ada data laporan untuk bulan ${document.getElementById('lap-bulan').value}.</p>`;
+                return;
+            }
+
+            let html = `
+                <div class="space-y-4 p-4 max-w-3xl mx-auto">
+                    <div class="text-center border-b pb-4">
+                        <h3 class="font-bold text-lg text-slate-900">LAPORAN PENDAPATAN & TAGIHAN AIR</h3>
+                        <p class="text-xs text-slate-500">Pengurus Air Bumirejo II - Bulan: ${document.getElementById('lap-bulan').value}</p>
+                    </div>
+                    <table class="w-full text-left text-xs border">
+                        <thead class="bg-slate-100">
+                            <tr><th class="p-2 border">ID Tagihan</th><th class="p-2 border">ID Pel</th><th class="p-2 border">Nama</th><th class="p-2 border">Pakai</th><th class="p-2 border">Total Bayar</th></tr>
+                        </thead>
+                        <tbody>
+            `;
+            filtered.forEach(t => {
+                const p = daftarPelanggan.find(x => String(x.id_pelanggan).trim() === String(t.id_pelanggan).trim()) || { nama: '-' };
+                const pakai = Math.max(0, Number(t.meter_ini) - Number(t.meter_lalu));
+                html += `
+                    <tr>
+                        <td class="p-2 border">${t.id_tagihan}</td>
+                        <td class="p-2 border">${t.id_pelanggan}</td>
+                        <td class="p-2 border">${p.nama}</td>
+                        <td class="p-2 border">${pakai} m³</td>
+                        <td class="p-2 border font-bold">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</td>
+                    </tr>
+                `;
+            });
+            html += `
+                        </tbody>
+                    </table>
+                    <div class="flex justify-between font-bold text-sm bg-slate-50 p-3 rounded-lg border">
+                        <span>Total Keseluruhan Pendapatan:</span>
+                        <span class="text-blue-600">Rp ${totalPendapatan.toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+            `;
+            area.innerHTML = html;
+        }
+
+        function downloadPDFLaporan() {
+            const element = document.getElementById('area-preview-laporan');
+            html2pdf().from(element).save(`Laporan-Bulanan-Air.pdf`);
+        }
+
+        function simpanPengaturanTarif() {
+            tarifPerM3 = Number(document.getElementById('setting-tarif-m3').value) || 3500;
+            iuranListrik = Number(document.getElementById('setting-iuran-listrik').value) || 5000;
+            localStorage.setItem('tarif_m3', tarifPerM3);
+            localStorage.setItem('iuran_listrik', iuranListrik);
+            tampilkanBanner('Pengaturan tarif berhasil disimpan!');
+        }
+
+        function gantiTab(tab) {
+            ['tagihan', 'pelanggan', 'invoice', 'laporan', 'pengaturan'].forEach(t => {
+                const el = document.getElementById(`content-${t}`);
+                if (el) el.classList.toggle('hidden', t !== tab);
+                const btn = document.getElementById(`btn-tab-${t}`);
+                if (btn) btn.className = t === tab ? "px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold" : "px-4 py-2 bg-white text-slate-700 border rounded-lg text-sm font-semibold";
+            });
+        }
+
+        function bukaModalLogin() {
+            document.getElementById('input-pin-operator').value = '';
+            document.getElementById('modal-login').classList.remove('hidden');
+        }
+
+        function tutupModalLogin() {
+            document.getElementById('modal-login').classList.add('hidden');
+        }
+
+        function prosesLoginOperator(e) {
+            e.preventDefault();
+            const pinInput = document.getElementById('input-pin-operator').value;
+            if (pinInput === PIN_OPERATOR_RAHASIA) {
+                localStorage.setItem('operator', 'true');
+                tutupModalLogin();
+                aktifkanUIOperator();
+                tampilkanBanner('Login operator berhasil!');
+            } else {
+                tampilkanBanner('PIN atau Password salah!', 'error');
+            }
+        }
+
+        function aktifkanUIOperator() {
+            document.getElementById('section-beranda').classList.add('hidden');
+            document.getElementById('section-operator').classList.remove('hidden');
+        }
+
+        function kembaliKeBeranda() {
+            document.getElementById('section-operator').classList.add('hidden');
+            document.getElementById('section-beranda').classList.remove('hidden');
+        }
+
+        function logoutOperator() {
+            localStorage.removeItem('operator');
+            kembaliKeBeranda();
+            tampilkanBanner('Berhasil keluar dari mode operator.');
+        }
+
+        function cariTagihanBeranda() {
+            const keyword = document.getElementById('input-cari-tagihan').value.trim().toLowerCase();
+            const area = document.getElementById('hasil-pencarian-beranda');
+
+            if (!keyword) {
+                area.innerHTML = `<div class="bg-white border rounded-2xl p-4 text-center text-slate-400 text-sm">Masukkan ID Pelanggan atau Nama terlebih dahulu.</div>`;
+                return;
+            }
+
+            // Pastikan data sudah dimuat sebelum pencarian dilakukan
+            if (daftarPelanggan.length === 0) {
+                tampilkanBanner("Data sedang disinkronkan, silakan coba beberapa saat lagi.", "error");
+                muatData();
+                return;
+            }
+
+            const foundPelanggan = daftarPelanggan.find(p => String(p.id_pelanggan).toLowerCase() === keyword || String(p.nama).toLowerCase().includes(keyword));
+            if (!foundPelanggan) {
+                area.innerHTML = `<div class="bg-white border rounded-2xl p-4 text-center text-slate-400 text-sm">Pelanggan dengan kata kunci "${keyword}" tidak ditemukan.</div>`;
+                return;
+            }
+
+            const tagihanPelanggan = daftarTagihan.filter(t => String(t.id_pelanggan) === String(foundPelanggan.id_pelanggan));
+
+            let html = `
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+                    <div class="border-b pb-3">
+                        <h3 class="font-bold text-slate-900 text-base">${foundPelanggan.nama} (${foundPelanggan.id_pelanggan})</h3>
+                        <p class="text-xs text-slate-500">${foundPelanggan.alamat} - Golongan: ${foundPelanggan.golongan}</p>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-sm">Daftar Tagihan Air</h4>
+            `;
+
+            if (tagihanPelanggan.length === 0) {
+                html += `<p class="text-xs text-slate-400">Belum ada tagihan tersimpan untuk pelanggan ini.</p>`;
+            } else {
+                html += `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-slate-100 text-slate-600 uppercase text-[11px]">
+                                <tr>
+                                    <th class="p-3">ID Tagihan</th>
+                                    <th class="p-3">Bulan</th>
+                                    <th class="p-3">Pemakaian</th>
+                                    <th class="p-3">Total Bayar</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                tagihanPelanggan.forEach(t => {
+                    const pakai = Math.max(0, Number(t.meter_ini) - Number(t.meter_lalu));
+                    html += `
+                        <tr class="border-b hover:bg-slate-50">
+                            <td class="p-3 font-semibold">${t.id_tagihan}</td>
+                            <td class="p-3">${t.bulan}</td>
+                            <td class="p-3">${pakai} m³</td>
+                            <td class="p-3 font-bold text-blue-600">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</td>
+                            <td class="p-3 text-center">
+                                <button onclick="previewInvoiceBeranda('${t.id_tagihan}')" class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-lg font-semibold">Preview Invoice</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += `</tbody></table></div>`;
+            }
+
+            html += `</div>`;
+            area.innerHTML = html;
+        }
+
+        function previewInvoiceBeranda(idTagihan) {
+            const t = daftarTagihan.find(x => x.id_tagihan === idTagihan);
+            if (!t) return;
+            const p = daftarPelanggan.find(x => String(x.id_pelanggan).trim() === String(t.id_pelanggan).trim()) || { nama: '-', alamat: '-' };
+            const pemakaian = Math.max(0, Number(t.meter_ini) - Number(t.meter_lalu));
+
+            document.getElementById('konten-modal-preview-beranda').innerHTML = `
+                <div class="border-2 border-dashed border-slate-300 p-6 rounded-2xl bg-white space-y-4">
+                    <div class="flex justify-between border-b pb-3">
+                        <div>
+                            <h4 class="font-bold text-slate-900">INVOICE AIR BUMIREJO II</h4>
+                            <p class="text-xs text-slate-500">Bulan Tagihan: ${t.bulan}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">${t.id_tagihan}</span>
+                        </div>
+                    </div>
+                    <div class="text-xs space-y-1">
+                        <p><b>ID Pelanggan:</b> ${t.id_pelanggan}</p>
+                        <p><b>Nama:</b> ${p.nama}</p>
+                        <p><b>Alamat:</b> ${p.alamat}</p>
+                    </div>
+                    <table class="w-full text-xs border">
+                        <tr class="bg-slate-100"><th class="p-2 border">Meter Lalu</th><th class="p-2 border">Meter Ini</th><th class="p-2 border">Pemakaian</th></tr>
+                        <tr><td class="p-2 border text-center">${t.meter_lalu}</td><td class="p-2 border text-center">${t.meter_ini}</td><td class="p-2 border text-center font-bold">${pemakaian} m³</td></tr>
+                    </table>
+                    <div class="flex justify-between items-center pt-2 font-bold text-sm">
+                        <span>Total Tagihan:</span>
+                        <span class="text-blue-600">Rp ${Number(t.total_bayar).toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modal-preview-beranda').classList.remove('hidden');
+        }
+   
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./pwabuilder-sw.js')
+            .then((reg) => {
+                console.log('Service Worker Berhasil Terdaftar', reg);
+            })
+            .catch((err) => {
+                console.log('Pendaftaran Service Worker Gagal:', err);
+            });
+        }
+    </script>
+</body>
+</html>
