@@ -458,8 +458,8 @@
         let modeEditPelanggan = false;
         let modeEditTagihan = false;
 
-        let tarifPerM3 = Number(localStorage.getItem('tarif_m3')) || 3500;
-        let iuranListrik = Number(localStorage.getItem('iuran_listrik')) || 5000;
+        let tarifPerM3 = Number(localStorage.getItem('tarif_m3')) || 1000;
+        let iuranListrik = Number(localStorage.getItem('iuran_listrik')) || 2000;
 
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('setting-tarif-m3').value = tarifPerM3;
@@ -692,7 +692,9 @@
 
         function renderTabelTagihan() {
             let html = '';
-            daftarTagihan.forEach(t => {
+            // Diurutkan dari data terakhir diinput (dibalik menggunakan .slice().reverse())
+            const daftarTagihanTerbalik = daftarTagihan.slice().reverse();
+            daftarTagihanTerbalik.forEach(t => {
                 html += `
                     <tr class="border-b hover:bg-sky-50/50 transition">
                         <td class="p-3 font-semibold">${t.id_tagihan}</td>
